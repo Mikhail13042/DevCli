@@ -1,60 +1,53 @@
-import './style.css'
-import heroImg from './assets/hero.png'
-import javascriptLogo from './assets/javascript.svg'
-import viteLogo from './assets/vite.svg'
-import { setupCounter } from './counter.js'
+import './style.css';
 
-document.querySelector('#app').innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${javascriptLogo}" class="framework" alt="JavaScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+let items = [
+  { id: 1, name: 'Мяч футбольный', category: 'Мячи', quantity: 12, price: 1500 },
+  { id: 2, name: 'Гантели 5 кг', category: 'Тренажёры', quantity: 6, price: 3200 },
+];
 
-<div class="ticks"></div>
+const tableBody = document.getElementById('table-body');
+const formEl = document.getElementById('add-form');
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-          <img class="button-icon" src="${javascriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+function render() {
+  tableBody.innerHTML = '';
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+  items.forEach((item) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${item.id}</td>
+      <td>${item.name}</td>
+      <td>${item.category}</td>
+      <td>${item.quantity}</td>
+      <td>${item.price} ₽</td>
+      <td><button class="btn-delete" data-id="${item.id}">Удалить</button></td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
 
-setupCounter(document.querySelector('#counter'))
+formEl.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const newItem = {
+    id: Date.now(),
+    name: document.getElementById('name').value,
+    category: document.getElementById('category').value,
+    quantity: Number(document.getElementById('quantity').value),
+    price: Number(document.getElementById('price').value),
+  };
+
+  items.push(newItem);
+  render();
+  formEl.reset();
+  document.getElementById('quantity').value = 1;
+});
+
+tableBody.addEventListener('click', (event) => {
+  if (event.target.classList.contains('btn-delete')) {
+    const id = Number(event.target.dataset.id);
+    items = items.filter((item) => item.id !== id);
+    render();
+  }
+});
+
+render();
